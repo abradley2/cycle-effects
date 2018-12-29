@@ -11,11 +11,11 @@ module.exports = (simulate) => (effects$) => {
         (simulate[config.tag] || simulate[runEffect.name])
 
       ;(mock || runEffect)(...args)
-        .then((result) => {
-          emitter.emit(config.tag, { result, error: null })
+        .then((value) => {
+          emitter.emit(config.tag, { value, error: null })
         })
         .catch((error) => {
-          emitter.emit(config.tag, { result: null, error })
+          emitter.emit(config.tag, { value: null, error })
         })
     },
     complete: function () {

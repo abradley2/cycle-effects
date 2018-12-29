@@ -25,7 +25,7 @@ const application = ({ effects }) => {
 
   const randomTimeout = effects(getRandom)
     .filter(v => !v.error)
-    .map(v => v.result)
+    .map(v => v.value)
     .map((timeoutLen) => {
       return [
         timeout,
@@ -38,7 +38,7 @@ const application = ({ effects }) => {
 
   const timeoutDone = effects(performTimeoutWait)
     .filter(v => !v.error)
-    .map(v => v.result)
+    .map(v => v.value)
 
   return {
     effects: xs.merge(
@@ -65,6 +65,50 @@ test('should run effects', (t) => {
     .subscribe({
       next: function (value) {
         t.equals(value, KENOBI)
+      }
+    })
+
+  run()
+})
+
+test('example in the README should work', (t) => {
+  t.plan(1)
+  t.timeoutAfter(1100)
+  function application ({ effects }) {
+    const randomEffect = Symbol('randomEffect')
+    const timeoutEffect = Symbol('timeoutEffect')
+
+    return {
+      effects: xs.merge(
+        xs.of([
+          () => new Promise((resolve) =>
+            resolve(Math.random())
+          ),
+          { tag: randomEffect }
+        ]),
+        effects(randomEffect)
+          .map((randomNum) => {
+            return [
+              (name, timeoutDuration) => new Promise((resolve) =>
+                setTimeout(() => resolve(name), timeoutDuration)
+              ),
+              { tag: timeoutEffect, args: ['Tony', randomNum * 1000] }
+            ]
+          })
+      ),
+      result: effects(timeoutEffect)
+        .filter((result) => !result.error)
+        .map((result) => result.value)
+    }
+  }
+
+  const { sinks, run } = setup(application, { effects: effectsDriver() })
+
+  sinks.result
+    .take(1)
+    .subscribe({
+      next: function (value) {
+        t.equals(value, 'Tony')
       }
     })
 
