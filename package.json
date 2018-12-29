@@ -1,0 +1,38 @@
+{
+  "name": "@abradley2/cycle-effects",
+  "version": "1.0.0",
+  "description": "Convenient catch-all driver for effects in Cycle.js",
+  "main": "./dist/index.js",
+  "scripts": {
+    "test": "tape ./test/**/*.test.js",
+    "build": "microbundle"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/abradley2/cycle-effects.git"
+  },
+  "author": "Tony Bradley",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/abradley2/cycle-effects/issues"
+  },
+  "homepage": "https://github.com/abradley2/cycle-effects#readme",
+  "peerDependencies": {
+    "xstream": ">=11.0.0"
+  },
+  "devDependencies": {
+    "@cycle/run": "^5.2.0",
+    "eslint": "^5.11.1",
+    "eslint-config-standard": "^12.0.0",
+    "eslint-plugin-import": "^2.14.0",
+    "eslint-plugin-node": "^8.0.0",
+    "eslint-plugin-promise": "^4.0.1",
+    "eslint-plugin-standard": "^4.0.0",
+    "microbundle": "^0.9.0",
+    "tape": "^4.9.1",
+    "xstream": "^11.7.0"
+  },
+  "dependencies": {
+    "mitt": "^1.1.3"
+  }
+}
