@@ -1,0 +1,17 @@
+{
+  "compilerOptions": {
+    "target": "es2015",
+    "module": "commonjs",
+    "sourceMap": true,
+    "noEmit": true,
+    "typeRoots": [
+      "./typings",
+      "./src/types",
+      "./node_modules/@types"
+    ],
+    "lib": [
+      "es6",
+      "dom"
+    ]
+  }
+}

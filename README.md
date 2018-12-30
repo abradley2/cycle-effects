@@ -13,30 +13,28 @@ supports, please open an issue
 
 ## API
 
-*Command*
-```
-type Command<A, B> = (...args: B): Promise<A>
-```
+As with most other Cycle drivers, the API surface area is just a source and a sink.
 
-*Command Config*
-```
-type CommandConfig<B> {
-  args: B;
-  tag: string | symbol;
-}
-```
+The types are a good guidance on what is expected. See the Example Usage section for
+a full, in-depth guide.
 
-*Effect*
 ```
-type Effect<A, B> = [ Command<A, B>, CommandConfig<B> ]
-```
+export type EventSource<A> = (tag: string | symbol) => xstream<
+  {
+    value: A;
+    error: Error;
+  }
+>
 
-*Result*
-```
-type Result<A> {
-  value: A;
-  error: Error;
-}
+export type EventSink<A> = xstream<
+  [
+    (args: any) => Promise<A>,
+    {
+      args: any;
+      tag: string | symbol;
+    }
+  ]
+>
 ```
 
 ### But isn't this running effects where we should be pure??
