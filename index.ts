@@ -1,6 +1,19 @@
 import * as Events from 'mitt'
 import xs from 'xstream'
 
+export type EventSource<A> = (tag: string | symbol) => xs<{
+  value: A;
+  error: Error;
+}>
+
+export type EventSink<A> = xs<[
+  (args: any) => Promise<A>,
+  {
+    args: any;
+    tag: string | symbol;
+  }
+]>
+
 export default function (simulate?: any): any {
 	return (effects$): any => {
 		const emitter = new Events()
