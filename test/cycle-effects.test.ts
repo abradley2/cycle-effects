@@ -27,13 +27,11 @@ const application = ({effects}): any => {
 		.filter(v => !v.error)
 		.map(v => v.value)
 		.map(timeoutLen => {
-			return [
-				timeout,
-				{
-					tag: performTimeoutWait,
-					args: [timeoutLen, KENOBI]
-				}
-			]
+			return {
+				run: timeout,
+				tag: performTimeoutWait,
+				args: [timeoutLen, KENOBI]
+			}
 		})
 
 	const timeoutDone = effects(performTimeoutWait)
@@ -43,10 +41,7 @@ const application = ({effects}): any => {
 	return {
 		effects: xs.merge(
 			start.map(() => {
-				return [
-					random,
-					{tag: getRandom}
-				]
+				return {run: random, tag: getRandom}
 			}),
 			randomTimeout
 		),
@@ -80,20 +75,21 @@ test('example in the README should work', t => {
 
 		return {
 			effects: xs.merge(
-				xs.of([
-					() => new Promise(resolve =>
-						resolve(Math.random())
-					),
-					{tag: randomEffect}
-				]),
+				xs.of(
+					{
+						run: () => new Promise(resolve => resolve(Math.random())),
+						tag: randomEffect
+					}
+				),
 				effects(randomEffect)
 					.map(randomNum => {
-						return [
-							(name, timeoutDuration) => new Promise(resolve =>
+						return {
+							run: (name, timeoutDuration) => new Promise(resolve =>
 								setTimeout(() => resolve(name), timeoutDuration)
 							),
-							{tag: timeoutEffect, args: ['Tony', randomNum * 1000]}
-						]
+							tag: timeoutEffect,
+							args: ['Tony', randomNum * 1000]
+						}
 					})
 			),
 			result: effects(timeoutEffect)

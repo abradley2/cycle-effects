@@ -19,22 +19,18 @@ The types are a good guidance on what is expected. See the Example Usage section
 a full, in-depth guide.
 
 ```
-export type EventSource<A> = (tag: string | symbol) => xstream<
-  {
+declare module '@abradley2/cycle-effects' {
+  export type EffectSource<A> = (tag: string | symbol) => xstream<{
     value: A;
     error: Error;
-  }
->
+  }>
 
-export type EventSink<A> = xstream<
-  [
-    (args: any) => Promise<A>,
-    {
-      args: any;
-      tag: string | symbol;
-    }
-  ]
->
+  export type EffectSink<A> = xstream<{
+    run: (args: any) => Promise<A>;
+    args: any;
+    tag: string | symbol;
+  }>
+}
 ```
 
 ### But isn't this running effects where we should be pure??
@@ -55,32 +51,33 @@ based on that random number. Finally, that effects results in the name
 const xs = require('xstream').default
 const createEffectsDriver = require('@abradley2/cycle-effects')
 
-function application ({ effects }) {
-  const randomEffect = Symbol("randomEffect")
-  const timeoutEffect = Symbol("timeoutEffect")
-  
-  return {
-    effects: xs.merge(
-      xs.of([
-        () => new Promise((resolve) => 
-          resolve(Math.random())
-        ),
-        { tag: randomEffect }
-      ]),
-      effects(randomEffect)
-        .map((randomNum) => {
-          return [
-            (name, timeoutDuration) => new Promise((resolve) =>
-              setTimeout(() => resolve(name), timeoutDuration)
-            ),
-            { tag: timeoutEffect, args: ["Tony", randomNum * 1000] }
-          ]
-        })
-    ),
-    result: effects(timeoutEffect)
-      .filter((result) => !result.error)
-      .map((result) => result.value)
-  }
+function application({effects}) {
+	const randomEffect = Symbol('randomEffect')
+	const timeoutEffect = Symbol('timeoutEffect')
+
+	return {
+		effects: xs.merge(
+			xs.of(
+				{
+					run: () => new Promise(resolve => resolve(Math.random())),
+					tag: randomEffect
+				}
+			),
+			effects(randomEffect)
+				.map(randomNum => {
+					return {
+						run: (name, timeoutDuration) => new Promise(resolve =>
+							setTimeout(() => resolve(name), timeoutDuration)
+						),
+						tag: timeoutEffect,
+						args: ['Tony', randomNum * 1000]
+					}
+				})
+		),
+		result: effects(timeoutEffect)
+			.filter(result => !result.error)
+			.map(result => result.value)
+	}
 }
 
 const {sinks, run} = setup(application, { effects: createEffectsDriver() })

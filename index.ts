@@ -1,29 +1,29 @@
 import * as Events from 'mitt'
 import xs from 'xstream'
 
-export type EventSource<A> = (tag: string | symbol) => xs<{
-  value: A;
-  error: Error;
-}>
+export type EffectSource<A> = (tag: string | symbol) => xs<{
+    value: A;
+    error: Error;
+  }>
 
-export type EventSink<A> = xs<[
-  (args: any) => Promise<A>,
-  {
-    args: any;
-    tag: string | symbol;
-  }
-]>
+export type EffectSink<A> = xs<
+    {
+      run: (args: any) => Promise<A>;
+      args: any;
+      tag: string | symbol;
+    }
+  >
 
 export default function (simulate?: any): any {
 	return (effects$): any => {
 		const emitter = new Events()
 
 		const unsub = effects$.subscribe({
-			next: function ([runEffect, config]) {
+			next: function ({run, ...config}) {
 				const args = config.args || []
-				const mock = typeof simulate === 'object' && (simulate[config.tag] || simulate[runEffect.name]);
+				const mock = typeof simulate === 'object' && (simulate[config.tag] || simulate[run.name]);
 
-				(mock || runEffect)(...args)
+				(mock || run)(...args)
 					.then(value => {
 						emitter.emit(config.tag, {value, error: null})
 					})

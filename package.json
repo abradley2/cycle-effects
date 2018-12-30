@@ -1,6 +1,6 @@
 {
   "name": "@abradley2/cycle-effects",
-  "version": "1.2.0",
+  "version": "2.0.0",
   "description": "Convenient catch-all driver for effects in Cycle.js",
   "main": "./dist/cycleEffects.js",
   "scripts": {
