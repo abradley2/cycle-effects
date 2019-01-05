@@ -1,11 +1,12 @@
 {
   "name": "@abradley2/cycle-effects",
-  "version": "2.0.0",
+  "version": "3.0.0",
   "description": "Convenient catch-all driver for effects in Cycle.js",
-  "main": "./dist/cycleEffects.js",
+  "main": "./index.js",
   "scripts": {
-    "test": "tape -r ts-node/register ./test/**/*.test.ts",
-    "build": "browserify -g uglifyify ./index.ts -s cycleEffects -x xstream -p tsify --debug | exorcist ./dist/cycleEffects.js.map > ./dist/cycleEffects.js"
+    "lint": "eslint ./",
+    "test": "eslint ./ && tape ./test/**/*.test.js",
+    "build": "npm run test && browserify -g uglifyify ./index.js -s cycleEffects -x xstream  --debug | exorcist ./dist/cycleEffects.umd.js.map > ./dist/cycleEffects.umd.js"
   },
   "repository": {
     "type": "git",
@@ -23,16 +24,14 @@
   "devDependencies": {
     "@cycle/run": "^5.2.0",
     "browserify": "^16.2.3",
-    "eslint": "^5.11.1",
-    "eslint-config-xo": "^0.25.1",
-    "eslint-config-xo-typescript": "^0.3.0",
-    "eslint-plugin-typescript": "^0.14.0",
+    "eslint": "^5.12.0",
+    "eslint-config-standard": "^12.0.0",
+    "eslint-plugin-import": "^2.14.0",
+    "eslint-plugin-node": "^8.0.1",
+    "eslint-plugin-promise": "^4.0.1",
+    "eslint-plugin-standard": "^4.0.0",
     "exorcist": "^1.0.1",
     "tape": "^4.9.1",
-    "ts-node": "^7.0.1",
-    "tsify": "^4.0.1",
-    "typescript": "^3.2.2",
-    "typescript-eslint-parser": "^21.0.2",
     "uglifyify": "^5.0.1",
     "xstream": "^11.7.0"
   },
