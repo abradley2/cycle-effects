@@ -1,4 +1,5 @@
-const Events = require('mitt')
+const mitt = require('mitt')
+const Events = mitt.default ? mitt.default : mitt
 const xs = require('xstream').default
 
 module.exports = function createEffectsDriver (simulate) {
