@@ -63,7 +63,7 @@ function application({effects}) {
 					tag: randomEffect
 				}
 			),
-			effects(randomEffect)
+			effects.select(randomEffect)
 				.map(randomNum => {
 					return {
 						run: (name, timeoutDuration) => new Promise(resolve =>
@@ -74,7 +74,7 @@ function application({effects}) {
 					}
 				})
 		),
-		result: effects(timeoutEffect)
+		result: effects.select(timeoutEffect)
 			.filter(result => !result.error)
 			.map(result => result.value)
 	}

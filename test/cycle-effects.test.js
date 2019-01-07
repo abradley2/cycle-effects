@@ -23,7 +23,7 @@ const application = ({ effects }) => {
   const getRandom = Symbol('getRandom')
   const performTimeoutWait = Symbol('performTimeoutWait')
 
-  const randomTimeout = effects(getRandom)
+  const randomTimeout = effects.select(getRandom)
     .filter(v => !v.error)
     .map(v => v.value)
     .map(timeoutLen => {
@@ -34,7 +34,7 @@ const application = ({ effects }) => {
       }
     })
 
-  const timeoutDone = effects(performTimeoutWait)
+  const timeoutDone = effects.select(performTimeoutWait)
     .filter(v => !v.error)
     .map(v => v.value)
 
@@ -81,7 +81,7 @@ test('example in the README should work', t => {
             tag: randomEffect
           }
         ),
-        effects(randomEffect)
+        effects.select(randomEffect)
           .map(randomNum => {
             return {
               run: (name, timeoutDuration) => new Promise(resolve =>
@@ -92,7 +92,7 @@ test('example in the README should work', t => {
             }
           })
       ),
-      result: effects(timeoutEffect)
+      result: effects.select(timeoutEffect)
         .filter(result => !result.error)
         .map(result => result.value)
     }
