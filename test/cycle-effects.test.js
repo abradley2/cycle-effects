@@ -110,3 +110,61 @@ test('example in the README should work', t => {
 
   run()
 })
+
+test('should be able to select values and errors', (t) => {
+  t.plan(2)
+  t.timeoutAfter(200)
+
+  const value = Symbol('value')
+  const shouldError = Symbol('shouldError')
+  const shouldValue = Symbol('shouldValue')
+
+  function app ({ effects }) {
+    const effectSink = xs.fromArray([
+      {
+        tag: shouldError,
+        run: () => {
+          return Promise.reject(new Error('error'))
+        },
+        args: null
+      },
+      {
+        tag: shouldValue,
+        run: () => {
+          return Promise.resolve(value)
+        },
+        args: null
+      }
+    ])
+
+    return {
+      effects: effectSink,
+      result: xs.merge(
+        effects.selectError(shouldError)
+          .mapTo({ tag: shouldError }),
+        effects.selectValue(shouldValue)
+          .mapTo({ tag: shouldValue })
+      )
+    }
+  }
+
+  const { run, sinks } = setup(app, { effects: effectsDriver() })
+
+  const results = {
+    [shouldError]: 0,
+    [shouldValue]: 0
+  }
+  sinks.result
+    .take(2)
+    .subscribe({
+      next: function (result) {
+        results[result.tag] = results[result.tag] + 1
+      },
+      complete: function () {
+        t.isEqual(results[shouldError], 1)
+        t.isEqual(results[shouldValue], 1)
+      }
+    })
+
+  run()
+})

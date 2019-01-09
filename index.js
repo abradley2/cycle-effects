@@ -20,21 +20,37 @@ module.exports = function createEffectsDriver (simulate) {
       }
     })
 
-    return {
-      select: function (tag) {
-        let sub
-        return xs.create({
-          start: function (listener) {
-            sub = e => {
-              listener.next(e)
-            }
-            emitter.on(tag, sub)
-          },
-          stop: function () {
-            emitter.off(tag, sub)
+    function select (tag) {
+      let sub
+      return xs.create({
+        start: function (listener) {
+          sub = e => {
+            listener.next(e)
           }
-        })
-      }
+          emitter.on(tag, sub)
+        },
+        stop: function () {
+          emitter.off(tag, sub)
+        }
+      })
+    }
+
+    function selectValue (tag) {
+      return select(tag)
+        .filter(({ error }) => error === null)
+        .map(({ value }) => value)
+    }
+
+    function selectError (tag) {
+      return select(tag)
+        .filter(({ error }) => error !== null)
+        .map(({ error }) => error)
+    }
+
+    return {
+      select,
+      selectValue,
+      selectError
     }
   }
 }
