@@ -6,7 +6,7 @@ module.exports = function createEffectsDriver (simulate) {
   return (effects$) => {
     const emitter = new Events()
 
-    const unsub = effects$.subscribe({
+    const subscription = effects$.subscribe({
       next: function ({ run, ...config }) {
         const args = config.args || []
         const mock = typeof simulate === 'object' && (simulate[config.tag] || simulate[run.name]);
@@ -16,11 +16,11 @@ module.exports = function createEffectsDriver (simulate) {
           .catch(error => emitter.emit(config.tag, { value: null, error }))
       },
       complete: function () {
-        unsub()
+        subscription.unsubscribe()
       }
     })
 
-    function select (tag) {
+    function select (tag = '*') {
       let sub
       return xs.create({
         start: function (listener) {
